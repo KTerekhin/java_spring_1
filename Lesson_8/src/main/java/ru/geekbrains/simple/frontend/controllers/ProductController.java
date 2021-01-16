@@ -1,6 +1,7 @@
 package ru.geekbrains.simple.frontend.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.simple.frontend.model.Product;
 import ru.geekbrains.simple.frontend.services.ProductService;
@@ -8,20 +9,22 @@ import ru.geekbrains.simple.frontend.services.ProductService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<Product> findAllProducts(
+    public Page<Product> findAllProducts(
+            @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "min_price", defaultValue = "0") Integer minPrice,
-            @RequestParam(name = "max_price", required = false) Integer maxPrice
+            @RequestParam(name = "max_price", required = false) Integer maxPrice,
+            @RequestParam(name = "p", defaultValue = "1") Integer page
     ) {
-        if (maxPrice == null) {
-            maxPrice = Integer.MAX_VALUE;
+        if (page < 1) {
+            page = 1;
         }
-        return productService.findAllByPrice(minPrice, maxPrice);
+        return productService.findAll(page);
     }
 
     @GetMapping("/{id}")
@@ -35,7 +38,7 @@ public class ProductController {
         return productService.saveOrUpdate(product);
     }
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable Long id) {
         productService.deleteProductById(id);
     }
