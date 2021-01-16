@@ -1,6 +1,8 @@
 package ru.geekbrains.simple.frontend.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.simple.frontend.model.Product;
 import ru.geekbrains.simple.frontend.repositories.ProductRepository;
@@ -21,8 +23,8 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<Product> findAllByPrice(int min, int max) {
-        return productRepository.findAllByPriceBetween(min, max);
+    public Page<Product> findAll(int page) {
+        return productRepository.findAll(PageRequest.of(page - 1, 10));
     }
 
     public Product saveOrUpdate(Product product) {
